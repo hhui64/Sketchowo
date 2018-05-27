@@ -1,2 +1,2 @@
-# Draw.io
+# Sketchowo
 A Multi-Player Online Sketchpad
