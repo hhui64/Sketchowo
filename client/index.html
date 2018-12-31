@@ -1,0 +1,488 @@
+<!DOCTYPE html>
+<html lang="zh-cn">
+<head>
+	<!-- Sketchowo | 设计: Scout | 前端: Moumou, Scout | 重构: Scout | 创建: 2018-06-06 | 项目地址: https://github.com/sc0utz/Sketchowo -->
+	<meta charset="utf-8">
+	<meta name="renderer" content="webkit">
+	<meta content="IE=edge,chrome=1" http-equiv="X-UA-Compatible">
+	<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no, minimal-ui">
+	<meta name="format-detection" content="telephone=no, email=no">
+	<meta http-equiv="Cache-Control" content="no-siteapp">
+	<meta name="description" content="HTML5多人在线涂鸦画板">
+	<meta name="keywords" content="sketchowo, sketchpad, Canvas Draw, 在线涂鸦, 在线画图, S站, Html5 Sketch-Pad">
+	<meta name="author" content="Scout & Mou">
+	<title>Sketchowo - HTML5多人在线涂鸦画板</title>
+	<!-- 框架样式 -->
+	<link rel="shortcut icon" href="img/favicon.ico">
+	<link rel="stylesheet" href="https://cdn.bootcss.com/foundation/6.4.4-rc1/css/foundation.min.css">
+	<link rel="stylesheet" href="https://cdn.bootcss.com/foundicons/3.0.0/foundation-icons.min.css">
+	<link rel="stylesheet" href="https://cdn.bootcss.com/jqueryui/1.12.1/jquery-ui.min.css">
+	<!-- 图标库样式 -->
+	<!-- <link rel="stylesheet" href="https://cdn.bootcss.com/material-design-icons/3.0.1/iconfont/material-icons.min.css"> -->
+	<link rel="stylesheet" href="https://cdn.bootcss.com/MaterialDesign-Webfont/2.4.85/css/materialdesignicons.min.css">
+	<!-- <link rel="stylesheet" href="https://cdn.bootcss.com/font-awesome/4.7.0/css/font-awesome.min.css"> -->
+	<!-- <link rel="stylesheet" href="https://at.alicdn.com/t/font_684378_6b4ebkidfatnjyvi.css"> -->
+	<!-- <link rel="stylesheet" href="https://cdn.bootcss.com/animate.css/3.5.2/animate.min.css"> -->
+	<!-- 主页面样式 -->
+	<link rel="stylesheet" href="css/sketchowo.css">
+	<!-- 浏览器兼容检测 -->
+	<script type="text/javascript" src="https://cdn.bootcss.com/modernizr/2010.07.06dev/modernizr.min.js" ></script>
+</head>
+<body>
+	<!-- 左侧容器 -->
+	<div id="container-left" class="hh-container hh-container-left">
+		<!-- 消息提示条 -->
+		<div id="alert" class="hh-alert hh-alert-danger">
+			<span id="alert-title">您与服务器连接中断，请检查您的网络！</span>
+		</div>
+		<!-- // 消息提示条 -->
+		<!-- 画布图层容器 -->
+		<div id="canvas-box" class="hh-canvas-box">
+			<div id="cursor" class="hh-cursor"></div>
+			<canvas id="canvas-0" class="hh-canvas" style="z-index: 65535"></canvas>
+			<canvas id="canvas-1" class="hh-canvas" style="z-index: 9"></canvas>
+			<canvas id="canvas-2" class="hh-canvas" style="z-index: 8"></canvas>
+			<canvas id="canvas-3" class="hh-canvas" style="z-index: 7"></canvas>
+			<canvas id="canvas-4" class="hh-canvas" style="z-index: 6"></canvas>
+			<canvas id="canvas-5" class="hh-canvas" style="z-index: 5"></canvas>
+			<canvas id="canvas-6" class="hh-canvas" style="z-index: 4"></canvas>
+			<canvas id="canvas-7" class="hh-canvas" style="z-index: 3"></canvas>
+			<canvas id="canvas-8" class="hh-canvas" style="z-index: 2"></canvas>
+			<canvas id="canvas-9" class="hh-canvas" style="z-index: 1"></canvas>
+		</div>
+		<!-- // 画布图层容器 -->
+	</div>
+	<!-- // 左侧容器 -->
+	<!-- 右侧容器 -->
+	<div id="container-right" class="hh-container hh-container-right">
+		<!-- 工具栏 -->
+		<div id="tool-bar" class="hh-tool-bar nodrag">
+			<ul id="tool-bar-ul" class="hh-tool-bar-ul pen-ul">
+				<li value="1">
+					<a class="pen-a pen-a-active" data-linewidth="14" data-color="#222222" data-rigidity="90" data-density="100" title="画笔 快捷键: Q" data-position="left" data-alignment="center" data-tooltip><i class="mdi mdi-marker"></i></a>
+				</li>
+				<li value="2">
+					<a class="pen-a" data-linewidth="14" data-color="#000000" data-rigidity="80" data-density="75" title="蜡笔 快捷键: W" data-position="left" data-alignment="center" data-tooltip><i class="mdi mdi-grease-pencil"></i></a>
+				</li>
+				<li value="3">
+					<a class="pen-a" data-linewidth="0.5" data-color="#000000" data-rigidity="90" data-density="50" title="贝塞尔铅笔 快捷键: E" data-position="left" data-alignment="center" data-tooltip><i class="mdi mdi-lead-pencil"></i></a>
+				</li>
+				<li value="4">
+					<a class="pen-a" data-linewidth="5" data-color="#000000" data-rigidity="90" data-density="100" title="羽毛笔 快捷键: R" data-position="left" data-alignment="center" data-tooltip><i class="mdi mdi-feather"></i></a>
+				</li>
+				<li value="0">
+					<a class="pen-a" data-linewidth="20" data-color="#333333" data-rigidity="100" data-density="100" title="橡皮擦 快捷键: C" data-position="left" data-alignment="center" data-tooltip><i class="mdi mdi-eraser"></i></a>
+				</li>
+			</ul>
+			<div class="hh-tool-shadow"></div>
+			<!-- 这层div用以撑开宽度, 让其父元素hidden, 达到隐藏滚动条但是可以滚动的效果. -->
+			<div class="hh-tool-bar-box">
+				<!-- 颜色栏 -->
+				<ul id="tool-bar-ul" class="hh-tool-bar-ul color-ul">
+					<li>
+						<a style="background: #222222" class="color-a color-a-active"></a>
+					</li>
+					<li>
+						<a style="background: #3395d3" class="color-a"></a>
+					</li>
+					<li>
+						<a style="background: #fa521f" class="color-a"></a>
+					</li>
+					<li>
+						<a style="background: #ee3643" class="color-a"></a>
+					</li>
+					<li>
+						<a style="background: #df0f58" class="color-a"></a>
+					</li>
+					<li>
+						<a style="background: #e11d93" class="color-a"></a>
+					</li>
+					<li>
+						<a style="background: #ba32b4" class="color-a"></a>
+					</li>
+					<li>
+						<a style="background: #19a485" class="color-a"></a>
+					</li>
+					<li>
+						<a style="background: #83c32d" class="color-a"></a>
+					</li>
+					<li>
+						<a style="background: #c6d82f" class="color-a"></a>
+					</li>
+					<li>
+						<a style="background: #95a8d4" class="color-a"></a>
+					</li>
+					<li>
+						<a style="background: #768aa7" class="color-a"></a>
+					</li>
+					<li>
+						<a style="background: #45889c" class="color-a"></a>
+					</li>
+					<li>
+						<a style="background: #041a9a" class="color-a"></a>
+					</li>
+				</ul>
+				<!-- // 颜色栏 -->
+			</div>
+		</div>
+		<!-- // 工具栏 -->
+		<!-- 玩家面板 -->
+		<div id="player-panel" class="hh-container hh-player-panel">
+			<!-- 笔触效果调节面板 -->
+			<div id="pen-setting" class="hh-pen-setting nodrag" ondragstart="return false;">
+				<span id="pen-name-title" class="title">画笔 快捷键: Q</span>
+				<ul class="pen-setting-ul">
+					<li>
+						<span>大小: </span>
+						<div id="width-slider" class="slider" data-slider data-start="1" data-initial-start="14" data-end="200">
+							<span class="slider-handle" data-slider-handle role="slider" tabindex="1" aria-controls="width-value"></span>
+							<span class="slider-fill" data-slider-fill></span>
+						</div>
+						<input id="width-value" type="number">
+					</li>
+					<li>
+						<span>浓度: </span>
+						<div id="density-slider" class="slider disabled" data-slider data-start="1" data-initial-start="100" data-end="100">
+							<span class="slider-handle" data-slider-handle role="slider" tabindex="1" aria-controls="density-value"></span>
+							<span class="slider-fill" data-slider-fill></span>
+						</div>
+						<input id="density-value" type="number">
+					</li>
+					<li>
+						<span>硬度: </span>
+						<div id="rigidity-slider" class="slider disabled" data-slider data-start="1" data-initial-start="90" data-end="100">
+							<span class="slider-handle" data-slider-handle role="slider" tabindex="1" aria-controls="rigidity-value"></span>
+							<span class="slider-fill" data-slider-fill></span>
+						</div>
+						<input id="rigidity-value" type="number">
+					</li>
+				</ul>
+			</div>
+			<!-- // 笔触效果调节面板 -->
+			<!-- 右中Tab栏 -->
+			<div id="info-box" class="hh-info-box">
+				<!-- Tab切换器 -->
+				<ul id="tab-title" class="tabs hh-tab-title" data-tabs>
+					<li class="tabs-title is-active">
+						<a href="#box-1" aria-selected="true"><i class="fi-magnifying-glass"></i>画布视图</a>
+					</li>
+					<li class="tabs-title">
+						<a href="#box-2"><i class="fi-page-csv"></i>房间信息</a>
+					</li>
+					<li class="tabs-title">
+						<a href="#box-3"><i class="fi-list-thumbnails"></i>玩家列表</a>
+					</li>
+				</ul>
+				<!-- // Tab切换器 -->
+				<!-- Tab容器 -->
+				<div id="tab-box" class="hh-tab-box" data-tabs-content="tab-title">
+					<div id="box-1" class="tabs-panel hh-tab-box-div nodrag htbd-canvas-view-box is-active">
+						<div id="canvas-view-div" class="hh-canvas-view-div">
+							<div id="canvas-view-rect" class="canvas-view-rect"></div>
+							<canvas id="canvas-view">
+						</div>
+					</div>
+					<div id="box-2" class="tabs-panel hh-tab-box-div nodrag htbd-room-info-box">22222</div>
+					<div id="box-3" class="tabs-panel hh-tab-box-div nodrag htbd-player-list-box">33333</div>
+				</div>
+				<!-- // Tab容器 -->
+			</div>
+			<!-- // 右中Tab栏 -->
+			<!-- 右下Tab栏 -->
+			<div id="info-box" class="hh-info-box hib-rb">
+				<!-- Tab切换器 -->
+				<ul id="tab-title" class="tabs hh-tab-title htt-rb" data-tabs>
+					<li class="tabs-title is-active">
+						<a href="#rb-box-1" aria-selected="true"><i class="fi-page-filled"></i>图层切换</a>
+					</li>
+					<li class="tabs-title">
+						<a href="#rb-box-2"><i class="fi-comments"></i>聊天信息</a>
+					</li>
+				</ul>
+				<!-- // Tab切换器 -->
+				<!-- Tab容器 -->
+				<div id="tab-box" class="hh-tab-box htb-rb" data-tabs-content="tab-title">
+					<!-- 图层容器 -->
+					<div id="rb-box-1" class="tabs-panel hh-tab-box-div htbd-rb is-active" ondragstart="return false;">
+						<ul id="layer-box" class="hh-layer-box">
+							<li class="hh-layer-active">
+								<i class="mdi mdi-eye"></i>
+								<img src="img/layer.jpg"></img>
+								<span>图层1</span>
+							</li>
+							<li>
+								<i class="mdi mdi-eye"></i>
+								<img src="img/layer.jpg"></img>
+								<span>图层2</span>
+							</li>
+							<li>
+								<i class="mdi mdi-eye"></i>
+								<img src="img/layer.jpg"></img>
+								<span>图层3</span>
+							</li>
+							<li>
+								<i class="mdi mdi-eye"></i>
+								<img src="img/layer.jpg"></img>
+								<span>图层4</span>
+							</li>
+							<li>
+								<i class="mdi mdi-eye"></i>
+								<img src="img/layer.jpg"></img>
+								<span>图层5</span>
+							</li>
+							<li>
+								<i class="mdi mdi-eye"></i>
+								<img src="img/layer.jpg"></img>
+								<span>图层6</span>
+							</li>
+							<li>
+								<i class="mdi mdi-eye"></i>
+								<img src="img/layer.jpg"></img>
+								<span>图层7</span>
+							</li>
+							<li>
+								<i class="mdi mdi-eye"></i>
+								<img src="img/layer.jpg"></img>
+								<span>图层8</span>
+							</li>
+							<li>
+								<i class="mdi mdi-eye"></i>
+								<img src="img/layer.jpg"></img>
+								<span>图层9</span>
+							</li>
+						</ul>
+					</div>
+					<!-- // 图层容器 -->
+					<!-- 聊天消息容器 -->
+					<div id="rb-box-2" class="tabs-panel hh-tab-box-div htbd-rb">
+						<div id="msg-list-box" class="hh-msg-list-box">
+							<ul id="msg-list-ul" class="hh-msg-list-ul">
+								<li class="hh-msg-system">温馨提示：文明创作，请不要随意擦除他人的作品，为平台创造良好环境！</li>
+								<li class="hh-msg-system">您 进入了房间</li>
+								<!--li>
+									<a>Scout</a><span>:</span><img src="img/owo/dk.gif">小众框架一时爽，前端重构葬火场。。。。
+								</li>
+								<li>
+									<a>Moumou</a><span>:</span><img src="img/owo/hi.gif">返工开心吗？
+								</li>
+								<li>
+									<a>撸撸猴</a><span>:</span>我挂树上打飞机了
+								</li>
+								<li>
+									<a>九五二七</a><span>:</span>9527前来报到！<img src="img/owo/haixiu.gif">
+								</li>
+								<li>
+									<a>W3C杀猪王</a><span>:</span>emmmm
+								</li>
+								<li class="hh-msg-system">微软爸爸 进入了房间</li>
+								<li>
+									<a>微软爸爸</a><span>:</span>客户要求兼容IE6，速度兼容
+								</li>
+								<li>
+									<a>谷歌野爹</a><span>:</span>兼容你妹辣鸡IE<img src="img/owo/tq.gif">
+								</li>
+								<li>
+									<a>甲骨文弟弟</a><span>:</span>有点道理啊
+								</li>
+								<li>
+									<a>金³胖</a><span>:</span>狂 用 葱 插 猫<img src="img/owo/wuyu.gif">
+								</li>
+								<li>
+									<a>微软今天倒闭了吗</a><span>:</span>......
+								</li>
+								<li>
+									<a>狂热粉丝</a><span>:</span>恕我直言，IE就是用来下载Chrome的。
+								</li>
+								<li>
+									<a>匿名玩家1</a><span>:</span><img src="img/owo/tq.gif">
+								</li>
+								<li>
+									<a>匿名玩家2</a><span>:</span>尬聊233<img src="img/owo/tp.gif">
+								</li>
+								<li>
+									<a>谷歌今天倒闭了吗</a><span>:</span>强势围观<img src="img/owo/love.gif">
+								</li>
+								<li>
+									<a>测试君</a><span>:</span>图文混排<img src="img/owo/kx.gif">一二三四五六七<img src="img/owo/sq.gif">再来一次一二三四<img src="img/owo/sk.gif">行高情况测试
+								</li>
+								<li>
+									<a>测试君</a><span>:</span>稳了，溜了溜了。
+								</li>
+								<li>
+									<a>程序媛</a><span>:</span><img src="img/owo/kx1.gif">萌萌哒
+								</li>
+								<li>
+									<a>geek</a><span>:</span>活捉一只野生程序媛
+								</li>
+								<li>
+									<a>Code Monkey</a><span>:</span>代码猴
+								</li>
+								<li>
+									<a>光头爷爷</a><span>:</span>zzz
+								</li>
+								<li>
+									<a>硅谷码农</a><span>:</span>PHP是世界上最好的语言<img src="img/owo/kx1.gif">
+								</li>
+								<li>
+									<a>66哔66</a><span>:</span>什么仇什么怨？
+								</li>
+							</ul-->
+						</div>
+						<div id="msg-bar" class="hh-msg-bar">
+							<input id="msg-input" type="text" name="" max="50" placeholder="输入内容按回车发送 (๑•̀ω•́๑)">
+						</div>
+					</div>
+					<!-- // 聊天消息容器 -->
+				</div>
+				<!-- // Tab容器 -->
+			</div>
+			<!-- // 右下Tab栏 -->
+		</div>
+		<!-- // 玩家面板 -->
+	</div>
+	<!-- // 右侧容器 -->
+	<!-- 颜色选择器浮层 -->
+	<div id="color-picker" class="hh-set-box hh-color-picker" ondragstart="return false;">
+		<div id="cp-box" class="cp-picker picker-wrapper">
+			<div id="picker-indicator" class="picker-indicator"></div>
+		</div>
+		<div id="cp-bar" class="cp-slide slide-wrapper">
+			<div id="slide-indicator" class="slide-indicator"></div>
+		</div>
+		<span>R:</span><span><input id="cr" type="text" maxlength="4"></span>
+		<span>G:</span><span><input id="cg" type="text" maxlength="4"></span>
+		<span>B:</span><span><input id="cb" type="text" maxlength="4"></span>
+		<span>H:</span><span><input id="ch" type="text" maxlength="7" style="width: 61px"></span>
+	</div>
+	<!-- // 颜色选择器浮层 -->
+	<!-- 初始化对话框 -->
+	<div id="rooms-windw" class="hh-shade" style="display: none">
+		<div class="hh-shade hh-rooms-window">
+			<h4>SKETCHOWO</h4>
+			<span class="hh-window-title">首先, 您需要有一个昵称, 让别人知道该怎么称呼您</span>
+			<span><input id="input-nick" class="input-blue" type="text" maxlength="20" placeholder="请填写您的昵称, 例如: 小猪佩奇"></span>
+			<span class="hh-window-title">接下来, 从列表中选择一个您喜欢的房间</span>
+			<div id="rooms-table-box" class="hh-rooms-table-box">
+				<table id="rooms-table" class="hh-rooms-table">
+					<tbody>
+				        <tr>
+				            <td>平台官方房间啊啊啊啊啊啊啊啊啊啊啊啊</td>
+				            <td>8/8</td>
+				            <td>开放回档功能、图层功能，欢迎来体验！啊啊啊啊啊</td>
+				        </tr>
+				        <tr>
+				            <td>快来玩emmm</td>
+				            <td>8/8</td>
+				            <td>性感荷官在线画画，爽到鼻血乱流！</td>
+				        </tr>
+				        <tr>
+				            <td>社会人专用</td>
+				            <td>3/8</td>
+				            <td>小猪佩奇身上纹</td>
+				        </tr>
+				        <tr>
+				            <td>东星乌鸦</td>
+				            <td>1/4</td>
+				            <td>难办？那就别办了</td>
+				        </tr>
+				        <tr>
+				            <td>小鸡快跑2333</td>
+				            <td>3/6</td>
+				            <td>暂无简介</td>
+				        </tr>
+				        <tr>
+				            <td>锤纸科技罗蛹炮</td>
+				            <td>3/6</td>
+				            <td>暂无简介</td>
+				        </tr>
+				        <tr>
+				            <td>小鸡快跑2333</td>
+				            <td>3/6</td>
+				            <td>暂无简介</td>
+				        </tr>
+				        <tr>
+				            <td>小鸡快跑2333</td>
+				            <td>3/6</td>
+				            <td>暂无简介</td>
+				        </tr>
+				        <tr>
+				            <td>小鸡快跑2333</td>
+				            <td>3/6</td>
+				            <td>暂无简介</td>
+				        </tr>
+				        <tr>
+				            <td>小鸡快跑2333</td>
+				            <td>3/6</td>
+				            <td>暂无简介</td>
+				        </tr>
+				        <tr>
+				            <td>小鸡快跑2333</td>
+				            <td>3/6</td>
+				            <td>暂无简介</td>
+				        </tr>
+				        <tr>
+				            <td>小鸡快跑2333</td>
+				            <td>3/6</td>
+				            <td>暂无简介</td>
+				        </tr>
+				        <tr>
+				            <td>小鸡快跑2333</td>
+				            <td>3/6</td>
+				            <td>暂无简介</td>
+				        </tr>
+				        <tr>
+				            <td>小鸡快跑2333</td>
+				            <td>3/6</td>
+				            <td>暂无简介</td>
+				        </tr>
+					</tbody>
+				</table>
+			</div>
+			<input type="checkbox"><span class="hh-normal-text">不显示人满的房间</span><span class="hh-normal-text" style="float: right">当前共有49个房间(108人在线)</span>
+			<span class="hh-window-title">然后, 选择您下一步的操作</span>
+			<a herf="#" class="button">我想创建一个房间</a>
+			<a herf="#" class="button" style="margin-left: 6px">刷新房间列表</a>
+			<a herf="#" class="button disabled" style="float: right">加入所选房间</a>
+		</div>
+	</div>
+	<!-- // 初始化对话框 -->
+	<!-- 关于对话框 -->
+	<div id="about-window" class="hh-window hh-window-about" style="display: none">
+		<h4>SKETCHOWO</h4>
+		<span >HTML5多人在线涂鸦画板 1.0</span>
+		<span style="margin-bottom: 16px">Copyright © 2018 Sketchowo.com</span>
+		<span style="margin-bottom: 16px">
+			项目地址: <a href="https://github.com/sc0utz/Sketchowo" target="_blank">https://github.com/sc0utz/Sketchowo</a><br/>
+			开源协议: <a href="https://github.com/sc0utz/Sketchowo/blob/master/LICENSE" target="_blank">https://github.com/sc0utz/Sketchowo/blob/master/LICENSE</a>
+		</span>
+		<span style="margin-bottom: 16px">
+			此项目的诞生离不开众多开源的框架和库:<br/> JQuery / JQuery UI / Zrub Foundation / Flexi ColorPicker / Material Design Icons
+		</span>
+		<span style="margin-bottom: 16px">
+			领衔主演:<br/>
+			前端: Moumou Scout / 后端: Scout / 备案: 陈楚狂
+		</span>
+		<span style="font-size: 20px">
+			<i class="mdi mdi-language-html5"></i>
+			<i class="mdi mdi-language-css3"></i>
+			<i class="mdi mdi-language-javascript"></i>
+			<i class="mdi mdi-jquery"></i>
+			<i class="mdi mdi-nodejs"></i>
+			<i class="mdi mdi-github-circle"></i>
+		</span>
+	</div>
+	<!-- // 关于对话框 -->
+	<!-- Jquery 框架JS -->
+	<script type="text/javascript" src="https://cdn.bootcss.com/jquery/3.3.1/jquery.min.js"></script>
+	<script type="text/javascript" src="https://cdn.bootcss.com/jqueryui/1.12.1/jquery-ui.min.js"></script>
+	<!-- Foundation 框架JS -->
+	<script type="text/javascript" src="https://cdn.bootcss.com/foundation/6.4.4-rc1/js/foundation.min.js"></script>
+	<!-- Node.js Socket.io-Client -->
+	<script type="text/javascript" src="https://cdn.bootcss.com/socket.io/2.1.1/socket.io.js"></script>
+	<!-- Sketchowo 主程序组件 -->
+	<script type="text/javascript" src="js/colorpicker.js" ></script>
+	<script type="text/javascript" src="js/ui.js"></script>
+	<script type="text/javascript" src="js/sketchowo.js"></script>
+	<script type="text/javascript" src="js/client.js"></script>
+</body>
+</html>

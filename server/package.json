@@ -1,0 +1,19 @@
+{
+  "name": "Sketchowo-Server",
+  "version": "0.0.1",
+  "description": "Sketchowo App Node.js Server",
+  "main": "server.js",
+  "author": "Scout",
+  "license": "AGPL-3.0",
+  "readmeFilename": "README.md",
+  "repository": {
+    "type": "git",  
+    "url": "https://github.com/sc0utz/Sketchowo.git"
+  },  
+  "dependencies": {
+    "async": "^2.6.1",
+    "express": "^4.16.3",
+    "socket.io": "^2.1.1",
+    "underscore": "^1.9.1"
+  }
+}
